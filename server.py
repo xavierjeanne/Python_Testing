@@ -30,7 +30,7 @@ def showSummary():
     club_list = [club for club in clubs if club['email'] == email]
     if not club_list:
         # Email non trouvé, afficher un message d'erreur sur la page d'accueil
-        return render_template('index.html', message="Cet email n'existe pas. Veuillez vérifier votre saisie.")
+        return render_template('index.html', message="This email doesn't exist. Please try again.")
     club = club_list[0]
     return render_template('welcome.html',club=club,competitions=competitions)
 
@@ -51,6 +51,11 @@ def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
+    # Check limit of 12 places per club and competition
+    if placesRequired > 12:
+        flash('Impossible to reserve more than 12 places per competition.')
+        return render_template('booking.html', club=club, competition=competition)
+    
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)

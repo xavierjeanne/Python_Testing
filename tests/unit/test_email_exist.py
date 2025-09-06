@@ -4,7 +4,8 @@ from server import app
 def test_showSummary_email_not_found(client):
     response = client.post('/showSummary', data={'email': 'notfound@email.com'})
     html_content = response.data.decode('utf-8')
-    assert "Cet email n&#39;existe pas. Veuillez vérifier votre saisie." in html_content
+    # L'apostrophe est échappée en HTML : doesn&#39;t
+    assert "This email doesn&#39;t exist" in html_content
     assert response.status_code == 200
 
 @pytest.fixture
