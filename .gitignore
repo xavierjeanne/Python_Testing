@@ -1,7 +1,9 @@
-bin
-include
-lib
-.Python
-tests/
-.envrc
-__pycache__
+# Created by venv; see https://docs.python.org/3/library/venv.html
+__pycache__/
+*.pytest_cache/
+Include
+Lib/
+Scripts
+issues.txt
+pyvenv.cfg 
+pytest.ini
