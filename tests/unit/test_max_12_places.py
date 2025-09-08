@@ -1,4 +1,6 @@
 import pytest
+import json
+import shutil
 from server import app, loadClubs, loadCompetitions
 import server
 
@@ -6,10 +8,23 @@ import server
 def client():
     app.config['TESTING'] = True
     with app.test_client() as client:
-        # Reset data before each test
+        # Backup original files
+        shutil.copy('clubs.json', 'clubs_backup.json')
+        shutil.copy('competitions.json', 'competitions_backup.json')
+        
+        # Reset to initial test data
+        shutil.copy('tests/fixtures/clubs_test.json', 'clubs.json')
+        shutil.copy('tests/fixtures/competitions_test.json', 'competitions.json')
+        
+        # Reload data in memory
         server.clubs = loadClubs()
         server.competitions = loadCompetitions()
+        
         yield client
+        
+        # Restore original files after test
+        shutil.copy('clubs_backup.json', 'clubs.json')
+        shutil.copy('competitions_backup.json', 'competitions.json')
 
 def test_purchasePlaces_more_than_12_places(client):
     response = client.post('/purchasePlaces', data={
