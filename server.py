@@ -112,6 +112,11 @@ def purchasePlaces():
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
     
+    # Check 0: places must be positive
+    if placesRequired <= 0:
+        flash('Number of places must be greater than 0.')
+        return render_template('booking.html', club=club, competition=competition)
+    
     # Check 1: maximum 12 places per club per competition (including previous bookings)
     existing_bookings = getClubBookingsForCompetition(club['name'], competition['name'])
     total_existing_places = sum(booking['places'] for booking in existing_bookings)
