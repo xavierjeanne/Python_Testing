@@ -100,7 +100,29 @@ def book(competition,club):
     foundClub = [c for c in clubs if c['name'] == club][0]
     foundCompetition = [c for c in competitions if c['name'] == competition][0]
     if foundClub and foundCompetition:
-        return render_template('booking.html',club=foundClub,competition=foundCompetition)
+        # Calculate dynamic booking limit based on ALL constraints
+        existing_bookings = getClubBookingsForCompetition(club, competition)
+        places_already_booked = sum(booking['places'] for booking in existing_bookings)
+        
+        # Constraint 1: Maximum 12 places per club per competition
+        remaining_from_12_limit = max(0, 12 - places_already_booked)
+        
+        # Constraint 2: Available points (1 point per place)
+        club_points = int(foundClub['points'])
+        
+        # Constraint 3: Available places in competition
+        available_places = int(foundCompetition['numberOfPlaces'])
+        
+        # The actual maximum is the minimum of all constraints
+        max_remaining = min(remaining_from_12_limit, club_points, available_places)
+        
+        return render_template('booking.html', 
+                             club=foundClub, 
+                             competition=foundCompetition,
+                             max_remaining=max_remaining,
+                             places_already_booked=places_already_booked,
+                             club_points=club_points,
+                             available_places=available_places)
     else:
         flash("Something went wrong-please try again")
         return render_template('welcome.html', club=club, competitions=competitions)
@@ -112,36 +134,78 @@ def purchasePlaces():
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
     
+    # Calculate dynamic booking limits for error returns (same logic as book route)
+    existing_bookings = getClubBookingsForCompetition(club['name'], competition['name'])
+    places_already_booked = sum(booking['places'] for booking in existing_bookings)
+    
+    # Constraint 1: Maximum 12 places per club per competition
+    remaining_from_12_limit = max(0, 12 - places_already_booked)
+    
+    # Constraint 2: Available points (1 point per place)
+    club_points = int(club['points'])
+    
+    # Constraint 3: Available places in competition
+    available_places = int(competition['numberOfPlaces'])
+    
+    # The actual maximum is the minimum of all constraints
+    max_remaining = min(remaining_from_12_limit, club_points, available_places)
+    
     # Check 0: places must be positive
     if placesRequired <= 0:
         flash('Number of places must be greater than 0.')
-        return render_template('booking.html', club=club, competition=competition)
+        return render_template('booking.html', 
+                             club=club, 
+                             competition=competition,
+                             max_remaining=max_remaining,
+                             places_already_booked=places_already_booked,
+                             club_points=club_points,
+                             available_places=available_places)
     
     # Check 1: maximum 12 places per club per competition (including previous bookings)
-    existing_bookings = getClubBookingsForCompetition(club['name'], competition['name'])
-    total_existing_places = sum(booking['places'] for booking in existing_bookings)
-    total_places_after_booking = total_existing_places + placesRequired
+    total_places_after_booking = places_already_booked + placesRequired
     
     if placesRequired > 12:
         flash('Impossible to reserve more than 12 places at once per competition.')
-        return render_template('booking.html', club=club, competition=competition)
+        return render_template('booking.html', 
+                             club=club, 
+                             competition=competition,
+                             max_remaining=max_remaining,
+                             places_already_booked=places_already_booked,
+                             club_points=club_points,
+                             available_places=available_places)
     
     if total_places_after_booking > 12:
-        flash(f'Maximum 12 places per club per competition. You already have {total_existing_places} places booked. You can only book {12 - total_existing_places} more places.')
-        return render_template('booking.html', club=club, competition=competition)
+        flash(f'Maximum 12 places per club per competition. You already have {places_already_booked} places booked. You can only book {12 - places_already_booked} more places.')
+        return render_template('booking.html', 
+                             club=club, 
+                             competition=competition,
+                             max_remaining=max_remaining,
+                             places_already_booked=places_already_booked,
+                             club_points=club_points,
+                             available_places=available_places)
     
     # Check 2: available places in competition
-    available_places = int(competition['numberOfPlaces'])
     if placesRequired > available_places:
         flash(f'Not enough places available. Only {available_places} places left.')
-        return render_template('booking.html', club=club, competition=competition)
+        return render_template('booking.html', 
+                             club=club, 
+                             competition=competition,
+                             max_remaining=max_remaining,
+                             places_already_booked=places_already_booked,
+                             club_points=club_points,
+                             available_places=available_places)
     
     # Check 3: sufficient points (1 point per place)
-    club_points = int(club['points'])
     points_needed = placesRequired  # 1 point per place
     if club_points < points_needed:
         flash(f'Not enough points. You need {points_needed} points but only have {club_points}.')
-        return render_template('booking.html', club=club, competition=competition)
+        return render_template('booking.html', 
+                             club=club, 
+                             competition=competition,
+                             max_remaining=max_remaining,
+                             places_already_booked=places_already_booked,
+                             club_points=club_points,
+                             available_places=available_places)
     
     # If all checks pass, proceed with booking
     competition['numberOfPlaces'] = str(available_places - placesRequired)
