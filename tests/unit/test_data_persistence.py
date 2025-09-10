@@ -1,7 +1,8 @@
 import pytest
 import json
 import shutil
-from server import app, loadClubs, loadCompetitions
+import os
+from server import app, loadClubs, loadCompetitions, loadBookings
 import server
 
 @pytest.fixture
@@ -11,20 +12,29 @@ def client():
         # Backup original files
         shutil.copy('clubs.json', 'clubs_backup.json')
         shutil.copy('competitions.json', 'competitions_backup.json')
+        if os.path.exists('bookings.json'):
+            shutil.copy('bookings.json', 'bookings_backup.json')
         
         # Reset to initial test data
         shutil.copy('tests/fixtures/clubs_test.json', 'clubs.json')
         shutil.copy('tests/fixtures/competitions_test.json', 'competitions.json')
+        shutil.copy('tests/fixtures/bookings_test.json', 'bookings.json')
         
         # Reload data in memory
         server.clubs = loadClubs()
         server.competitions = loadCompetitions()
+        server.bookings = loadBookings()
         
         yield client
         
         # Restore original files after test
         shutil.copy('clubs_backup.json', 'clubs.json')
         shutil.copy('competitions_backup.json', 'competitions.json')
+        if os.path.exists('bookings_backup.json'):
+            shutil.copy('bookings_backup.json', 'bookings.json')
+        else:
+            if os.path.exists('bookings.json'):
+                os.remove('bookings.json')
 
 def test_data_persistence_after_booking(client):
     """Test that booking changes are saved to JSON files"""
