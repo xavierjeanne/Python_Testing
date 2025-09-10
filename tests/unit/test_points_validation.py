@@ -80,14 +80,14 @@ def test_purchasePlaces_exactly_enough_points(client):
     assert response.status_code == 200
 
 def test_purchasePlaces_zero_points_requested(client):
-    """Test booking with zero places requested"""
+    """Test booking with zero places requested should show error"""
     response = client.post('/purchasePlaces', data={
         'competition': 'Spring Festival',
         'club': 'Simply Lift',
         'places': '0'  # Zero places
     })
     html_content = response.data.decode('utf-8')
-    assert "Great-booking complete" in html_content
+    assert "Number of places must be greater than 0" in html_content
     assert response.status_code == 200
 
 def test_purchasePlaces_negative_places_validation(client):
@@ -98,5 +98,6 @@ def test_purchasePlaces_negative_places_validation(client):
         'places': '-1'  # Negative places
     })
     html_content = response.data.decode('utf-8')
-    # Should either show error or convert to 0
+    # Should show error message for negative places
+    assert "Number of places must be greater than 0" in html_content
     assert response.status_code == 200

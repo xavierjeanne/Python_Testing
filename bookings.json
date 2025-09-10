@@ -4,45 +4,18 @@
             "id": 1,
             "club": "Simply Lift",
             "competition": "Spring Festival",
-            "places": 1,
-            "points_used": 1,
-            "date": "2025-09-08T23:22:40.324242",
+            "places": 3,
+            "points_used": 3,
+            "date": "2025-09-10T18:14:51.340442",
             "status": "confirmed"
         },
         {
             "id": 2,
-            "club": "Simply Lift",
-            "competition": "Spring Festival",
-            "places": 3,
-            "points_used": 3,
-            "date": "2025-09-08T23:22:40.367228",
-            "status": "confirmed"
-        },
-        {
-            "id": 3,
             "club": "Iron Temple",
             "competition": "Spring Festival",
             "places": 4,
             "points_used": 4,
-            "date": "2025-09-08T23:22:40.411765",
-            "status": "confirmed"
-        },
-        {
-            "id": 4,
-            "club": "Simply Lift",
-            "competition": "Spring Festival",
-            "places": 0,
-            "points_used": 0,
-            "date": "2025-09-08T23:22:40.433897",
-            "status": "confirmed"
-        },
-        {
-            "id": 5,
-            "club": "Simply Lift",
-            "competition": "Spring Festival",
-            "places": -1,
-            "points_used": -1,
-            "date": "2025-09-08T23:22:40.455860",
+            "date": "2025-09-10T18:14:51.378404",
             "status": "confirmed"
         }
     ]

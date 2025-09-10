@@ -6,15 +6,52 @@
 </head>
 <body>
     <h2>{{competition['name']}}</h2>
-    Places available: {{competition['numberOfPlaces']}}
+    <p>Places available: {{competition['numberOfPlaces']}}</p>
+    <p>Your club points: {{club_points}}</p>
+    
+    {% if places_already_booked > 0 %}
+    <p><strong>Your club has already booked {{places_already_booked}} places for this competition.</strong></p>
+    {% endif %}
+    
+    {% if max_remaining > 0 %}
+    <p>You can book up to {{max_remaining}} more places.</p>
+    <p><em>Limited by: 
+        {% if max_remaining == (12 - places_already_booked) and max_remaining == club_points and max_remaining == available_places %}
+            12 places max per club ({{12 - places_already_booked}} remaining), your {{club_points}} points, and {{available_places}} available places
+        {% elif max_remaining == (12 - places_already_booked) and max_remaining == club_points %}
+            12 places max per club ({{12 - places_already_booked}} remaining) and your {{club_points}} points
+        {% elif max_remaining == (12 - places_already_booked) and max_remaining == available_places %}
+            12 places max per club ({{12 - places_already_booked}} remaining) and {{available_places}} available places
+        {% elif max_remaining == club_points and max_remaining == available_places %}
+            your {{club_points}} points and {{available_places}} available places
+        {% elif max_remaining == (12 - places_already_booked) %}
+            12 places max per club ({{12 - places_already_booked}} remaining)
+        {% elif max_remaining == club_points %}
+            your {{club_points}} available points
+        {% elif max_remaining == available_places %}
+            {{available_places}} available places in competition
+        {% endif %}
+    </em></p>
     
     <form action="/purchasePlaces" method="post">
         <input type="hidden" name="club" value="{{club['name']}}">
         <input type="hidden" name="competition" value="{{competition['name']}}">
         <label for="places">How many places?</label>
-        <input type="number" name="places" id="places" min="1" max="12" required placeholder="Enter 1-12 places">
+        <input type="number" name="places" id="places" min="1" max="{{max_remaining}}" required placeholder="Enter 1-{{max_remaining}} places">
         <button type="submit">Book</button>
     </form>
+    {% else %}
+    {% if places_already_booked >= 12 %}
+    <p><strong>You have reached the maximum of 12 places for this competition.</strong></p>
+    {% elif club_points == 0 %}
+    <p><strong>You don't have enough points to book any places. You need 1 point per place.</strong></p>
+    {% elif available_places == 0 %}
+    <p><strong>No more places available in this competition.</strong></p>
+    {% else %}
+    <p><strong>No more places can be booked due to current constraints.</strong></p>
+    {% endif %}
+    <p><a href="/logout">Return to main page</a></p>
+    {% endif %}
 
     {% for message in get_flashed_messages() %}
         <p style="color: red;">{{ message }}</p>
