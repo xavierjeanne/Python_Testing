@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUDLFT - Public Points Dashboard</title>
+  
+</head>
+<body>
+    <div class="container">
+        <h1>GUDLFT Public Points Dashboard</h1>
+        <p class="subtitle">Transparency in club points allocation - Updated in real-time</p>
+        
+        <div class="navigation">
+            <a href="/" class="nav-link">Club Login</a>
+        </div>
+        
+        <table class="points-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Club Name</th>
+                    <th>Available Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for club in clubs %}
+                <tr>
+                    <td>    {{ loop.index }}
+                    </td>
+                    <td >{{ club.name }}</td>
+                    <td>{{ club.points }} pts</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
