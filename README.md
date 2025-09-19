@@ -1,51 +1,158 @@
-# gudlift-registration
+# GUDLFT Competition Booking Platform
 
-1. Why
+## 📋 Vue d'ensemble
+
+Application Flask légère pour la réservation de places dans des compétitions. Cette plateforme permet aux clubs de réserver des places en utilisant leurs points, avec un système de validation robuste et des limites dynamiques.
+
+## 🚀 Technologies utilisées
+
+- **Python 3.x+**
+- **Flask** - Framework web minimaliste
+- **JSON** - Stockage des données (clubs, compétitions, réservations)
+- **pytest** - Framework de tests
+- **Jinja2** - Moteur de templates
+
+## 📦 Installation
+
+### 1. Configuration de l'environnement
+```bash
+# Cloner le repository
+git clone <repository-url>
+cd Python_Testing
+
+# Créer un environnement virtuel
+python -m venv .
+# Ou: virtualenv .
+
+# Activer l'environnement virtuel
+# Windows:
+Scripts\activate
+# Linux/Mac:
+source bin/activate
+```
+
+### 2. Installation des dépendances
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Configuration Flask
+```bash
+# Windows PowerShell:
+$env:FLASK_APP = "server.py"
+
+# Linux/Mac:
+export FLASK_APP=server.py
+```
+
+### 4. Lancement de l'application
+```bash
+flask run
+# Ou:
+python -m flask run --debug
+```
+
+L'application sera disponible sur `http://127.0.0.1:5000`
+
+## 📊 Structure des données
+
+### 🏛️ Fichiers de données principaux
+
+- **`clubs.json`** - Liste des clubs avec emails et points
+- **`competitions.json`** - Liste des compétitions avec dates et places disponibles  
+- **`bookings.json`** - Historique des réservations
+
+### 🎭 Utilisateurs de test
+
+| Club | Email | Points initiaux |
+|------|-------|----------------|
+| Simply Lift | john@simplylift.co | 13 |
+| Iron Temple | admin@irontemple.com | 4 |
+| She Lifts | kate@shelifts.co.uk | 12 |
+
+## ⚡ Fonctionnalités
+
+### ✅ Système de réservation
+- **Validation des places positives** - Empêche les réservations nulles/négatives
+- **Limite de 12 places max** par club et par compétition
+- **Système de points** - 1 point = 1 place
+- **Limites dynamiques** - Calcul en temps réel des places disponibles
+- **Historique des réservations** - Suivi complet des transactions
+
+### 🔒 Règles métier
+1. Maximum 12 places par réservation
+2. Maximum 12 places total par club par compétition  
+3. Points suffisants requis (1 point/place)
+4. Places disponibles dans la compétition
+5. Validation des données d'entrée
+
+## 🧪 Tests
+
+### 📁 Architecture des tests
+
+```
+tests/
+├── unit/                          # Tests unitaires purs (>50 tests)
+│   ├── test_data_loading.py       # Tests de chargement JSON
+│   ├── test_data_saving.py        # Tests de sauvegarde
+│   ├── test_booking_functions.py  # Tests des fonctions de réservation
+│   ├── test_business_logic.py     # Tests de logique métier
+│   ├── test_utils.py             # Tests des fonctions utilitaires
+│   ├── test_lookup_functions.py   # Tests de recherche
+│   ├── test_limit_calculations.py # Tests de calcul de limites
+│   ├── test_data_updates.py       # Tests de mise à jour
+│   └── test_error_handling.py     # Tests de gestion d'erreurs
+├── integration/                   # Tests d'intégration Flask
+│   ├── test_negative_places.py    # Tests validation places négatives
+│   ├── test_points_validation.py  # Tests validation points
+│   └── test_dynamic_limits.py     # Tests limites dynamiques
+└── fixtures/                     # Données de test contrôlées
+    ├── clubs_test.json           # Clubs pour tests
+    ├── competitions_test.json    # Compétitions pour tests
+    └── bookings_test.json        # Réservations pour tests
+```
+
+### 🏃‍♂️ Exécution des tests
+
+#### Tests unitaires (recommandés)
+```bash
+# Tous les tests unitaires
+python -m pytest tests/unit/ -v
+
+# Par fichier spécifique
+python -m pytest tests/unit/test_business_logic.py -v
+
+# Par classe de tests
+python -m pytest tests/unit/test_business_logic.py::TestValidationRules -v
+```
+
+#### Tests d'intégration
+```bash
+# Tous les tests d'intégration
+python -m pytest tests/integration/ -v
+
+# Test spécifique
+python -m pytest tests/integration/test_dynamic_limits.py -v
+```
+
+#### Tous les tests
+```bash
+python -m pytest -v
+```
+
+### 📈 Couverture de tests
+
+```bash
+# Installation de coverage
+pip install coverage
+
+# Exécution avec couverture
+coverage run -m pytest
+coverage report
+coverage html  # Génère un rapport HTML
+```
 
 
-    This is a proof of concept (POC) project to show a light-weight version of our competition booking platform. The aim is the keep things as light as possible, and use feedback from the users to iterate.
-
-2. Getting Started
-
-    This project uses the following technologies:
-
-    * Python v3.x+
-
-    * [Flask](https://flask.palletsprojects.com/en/1.1.x/)
-
-        Whereas Django does a lot of things for us out of the box, Flask allows us to add only what we need. 
-     
-
-    * [Virtual environment](https://virtualenv.pypa.io/en/stable/installation.html)
-
-        This ensures you'll be able to install the correct packages without interfering with Python on your machine.
-
-        Before you begin, please ensure you have this installed globally. 
 
 
-3. Installation
-
-    - After cloning, change into the directory and type <code>virtualenv .</code>. This will then set up a a virtual python environment within that directory.
-
-    - Next, type <code>source bin/activate</code>. You should see that your command prompt has changed to the name of the folder. This means that you can install packages in here without affecting affecting files outside. To deactivate, type <code>deactivate</code>
-
-    - Rather than hunting around for the packages you need, you can install in one step. Type <code>pip install -r requirements.txt</code>. This will install all the packages listed in the respective file. If you install a package, make sure others know by updating the requirements.txt file. An easy way to do this is <code>pip freeze > requirements.txt</code>
-
-    - Flask requires that you set an environmental variable to the python file. However you do that, you'll want to set the file to be <code>server.py</code>. Check [here](https://flask.palletsprojects.com/en/1.1.x/quickstart/#a-minimal-application) for more details
-
-    - You should now be ready to test the application. In the directory, type either <code>flask run</code> or <code>python -m flask run</code>. The app should respond with an address you should be able to go to using your browser.
-
-4. Current Setup
-
-    The app is powered by [JSON files](https://www.tutorialspoint.com/json/json_quick_guide.htm). This is to get around having a DB until we actually need one. The main ones are:
-     
-    * competitions.json - list of competitions
-    * clubs.json - list of clubs with relevant information. You can look here to see what email addresses the app will accept for login.
-
-5. Testing
-
-    You are free to use whatever testing framework you like-the main thing is that you can show what tests you are using.
-
-    We also like to show how well we're testing, so there's a module called 
-    [coverage](https://coverage.readthedocs.io/en/coverage-5.1/) you should add to your project.
 
