@@ -142,15 +142,30 @@ python -m pytest -v
 
 ### 📈 Couverture de tests
 
-```bash
-# Installation de coverage
-pip install coverage
 
 # Exécution avec couverture
 coverage run -m pytest
 coverage report
 coverage html  # Génère un rapport HTML
 ```
+
+## 🏃‍♂️ Tests de performance avec Locust
+
+Locust permet de simuler des utilisateurs et de mesurer le temps de réponse des endpoints.
+
+
+### Lancement d'un test Locust
+
+```bash
+locust -f simple_test.py --host http://127.0.0.1:5000 --users 6 --spawn-rate 1 --run-time 30s --headless
+```
+
+- `--users 6` : nombre d'utilisateurs simulés
+- `--spawn-rate 1` : vitesse d'apparition des utilisateurs
+- `--run-time 30s` : durée du test
+- `--headless` : mode sans interface web
+
+Les résultats s'affichent dans le terminal et permettent de vérifier que les temps de réponse sont conformes aux exigences (<2s pour les mises à jour, <5s pour les chargements).
 
 
 
