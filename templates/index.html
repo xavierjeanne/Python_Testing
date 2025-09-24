@@ -5,13 +5,29 @@
     <title>GUDLFT Registration</title>
 </head>
 <body>
-    <h1>Welcome to the GUDLFT Registration Portal!</h1>
-    Please enter your secretary email to continue:
-    <form action="showSummary" method="post">
-        <label for="email">Email:</label>
-        <input type="email" name="email" id=""/>
-        <button type="submit">Enter</button>
-    </form>
-    <p>{{ message }}</p>
+    <div class="container">
+        <h1>Welcome to the GUDLFT Registration Portal!</h1>
+        
+        <!-- Public Information Section -->
+        <div class="public-links">
+            <h3>Public Information (No Login Required)</h3>
+            <p>View transparency information about clubs:</p>
+            <a href="/public/points" class="public-link">Points Dashboard</a>
+        </div>
+        
+        <!-- Club Login Section -->
+        <h2>Club Secretary Login</h2>
+        <p>Please enter your secretary email to access booking features:</p>
+        <form action="showSummary" method="post">
+            <label for="email">Email:</label><br>
+            <input type="email" name="email" id="email" placeholder="your@club-email.com" required/>
+            <br><br>
+            <button type="submit">Enter</button>
+        </form>
+        
+        {% if message %}
+        <p style="color: #d32f2f; background-color: #ffebee; padding: 10px; border-radius: 4px;">{{ message }}</p>
+        {% endif %}
+    </div>
 </body>
 </html>

@@ -266,7 +266,29 @@ def purchasePlaces():
     return render_template('welcome.html', club=club, competitions=competitions)
 
 
-# TODO: Add route for points display
+@app.route('/public/points')
+def public_points():
+    """
+    Public dashboard showing all clubs' points totals
+    Accessible without login for transparency
+    Performance optimized: < 2 seconds target
+    """
+    # Get all clubs data (optimized for performance)
+    clubs_data = []
+    for club in clubs:
+        clubs_data.append({
+            'name': club['name'],
+            'points': int(club['points'])
+        })
+    
+    # Sort by points descending for better UX
+    clubs_data.sort(key=lambda x: x['points'], reverse=True)
+    
+    # Add ranking
+    for i, club in enumerate(clubs_data, 1):
+        club['rank'] = i
+    
+    return render_template('public_points.html', clubs=clubs_data)
 
 
 @app.route('/logout')
