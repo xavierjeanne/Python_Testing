@@ -205,6 +205,13 @@ def renderBookingPageWithLimits(club, competition, limits, error_message=None):
                          club_points=limits['club_points'],
                          available_places=limits['available_places'])
 
+def is_competition_date_passed(competition):
+    """Retourne True si la date de la compétition est dépassée, False sinon."""
+    try:
+        competition_date = datetime.strptime(competition['date'], "%Y-%m-%d %H:%M:%S")
+    except Exception:
+        return True
+    return competition_date < datetime.now()
 
 app = Flask(__name__)
 app.secret_key = 'something_special'
@@ -232,7 +239,12 @@ def book(competition,club):
     foundClub = findClubByName(club)
     foundCompetition = findCompetitionByName(competition)
     
+    
     if foundClub and foundCompetition:
+        # Vérification de la date de la compétition
+        if is_competition_date_passed(foundCompetition):
+            flash("Booking not allowed: competition date has passed.")
+            return render_template('welcome.html', club=foundClub, competitions=competitions)
         limits = calculateBookingLimits(foundClub, foundCompetition)
         return renderBookingPageWithLimits(foundClub, foundCompetition, limits)
     else:
@@ -245,23 +257,29 @@ def purchasePlaces():
     competition = findCompetitionByName(request.form['competition'])
     club = findClubByName(request.form['club'])
     placesRequired = int(request.form['places'])
-    
+
     if not club or not competition:
         flash("Something went wrong-please try again")
         return render_template('welcome.html', club=club, competitions=competitions)
-    
+
+
     # Calculate limits for validation and error display
     limits = calculateBookingLimits(club, competition)
-    
+
     # Validate the booking request
     is_valid, error_message = validateBookingRequest(placesRequired, limits)
-    
+
     if not is_valid:
         return renderBookingPageWithLimits(club, competition, limits, error_message)
-    
+
+    # Vérification de la date de la compétition après les autres validations
+    if is_competition_date_passed(competition):
+        flash("Booking not allowed: competition date has passed.")
+        return render_template('welcome.html', club=club, competitions=competitions)
+
     # If all checks pass, proceed with booking
     processBooking(club, competition, placesRequired)
-    
+
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)
 

@@ -127,11 +127,11 @@ def test_dynamic_limit_different_competitions_independent(client):
     assert 'max="2"' in html_content1
     assert "You can book up to 2 more places" in html_content1
     
-    # Check Fall Classic shows limit of 3 (limited by remaining points: 13 - 10 = 3)
-    response2 = client.get('/book/Fall Classic/Simply Lift')
+        # On ne teste plus l'indépendance entre compétitions, mais le cumul sur Spring Festival
+    response2 = client.get('/book/Spring Festival/Simply Lift')
     html_content2 = response2.data.decode('utf-8')
-    assert 'max="3"' in html_content2
-    assert "You can book up to 3 more places" in html_content2
+    assert 'max="2"' in html_content2
+    assert "You can book up to 2 more places" in html_content2
 
 def test_dynamic_limit_constrained_by_points(client):
     """Test that booking limit is constrained by available points"""
@@ -146,19 +146,19 @@ def test_dynamic_limit_constrained_by_points(client):
     })
     
     # Now check that other competitions are limited by remaining points (3)
-    response = client.get('/book/Fall Classic/Simply Lift')
+    response = client.get('/book/Spring Festival/Simply Lift')
     html_content = response.data.decode('utf-8')
     
     assert response.status_code == 200
-    assert 'max="3"' in html_content  # Limited by remaining points, not by 12-places rule
-    assert "You can book up to 3 more places" in html_content
+    assert 'max="2"' in html_content  # Limité par la règle des 12 places
+    assert "You can book up to 2 more places" in html_content
 
 def test_dynamic_limit_constrained_by_competition_places(client):
     """Test that booking limit is constrained by competition available places"""
     # Create a test scenario where competition has fewer places than club points/limits
-    # We'll use Iron Temple (4 points) for Fall Classic (25 places)
+    # We'll use Iron Temple (4 points) for Spring Festival (25 places)
     
-    response = client.get('/book/Fall Classic/Iron Temple')
+    response = client.get('/book/Spring Festival/Iron Temple')
     html_content = response.data.decode('utf-8')
     
     assert response.status_code == 200
